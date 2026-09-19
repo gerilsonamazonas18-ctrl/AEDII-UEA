@@ -1,5 +1,6 @@
 import glob
 import os
+import tkinter
 
 def merge_sort(arr):
     if len(arr) <= 1:
@@ -32,14 +33,13 @@ def dividir_arquivo(nome_arquivo):
     arquivos = []
     numeros = []
     pasta_partes = "partes"
-    limite_numero = 1000
+    limite_numero = int(input("Digite o limite de números por arquivo: "))
 
-    os.makedirs(pasta_partes, exist_ok=True)
+    os.makedirs(pasta_partes, exist_ok = True)
 
     with open(nome_arquivo) as arquivo:
         for linha in arquivo:
             numeros.append(int(linha))
-
 
             if (len(numeros) == limite_numero):
                 numero_arquivo = len(arquivos) + 1
@@ -125,15 +125,16 @@ def validar_resultado(arquivo_original, arquivo_final):
     mesma_soma_quadrados = soma_quadrados_original == soma_quadrados_final 
     numeros_preservados = ( mesma_quantidade and mesma_soma and mesma_soma_quadrados ) 
 
-    
-    print("\n--- VALIDAÇÃO ---") 
-    print(f"Quantidade original: {quantidade_original}") 
-    print(f"Quantidade final: {quantidade_final}") 
-    print(f"Mesma quantidade: {'SIM' if mesma_quantidade else 'NÃO'}") 
-    print(f"Arquivo ordenado corretamente: {'SIM' if ordenado else 'NÃO'}") 
-    print(f"Números preservados: {'SIM' if numeros_preservados else 'NÃO'}")
+    validacao = "\n".join([
+        "--- VALIDAÇÃO ---",
+        f"Quantidade original: {quantidade_original}",
+        f"Quantidade final: {quantidade_final}",
+        f"Mesma quantidade: {'SIM' if mesma_quantidade else 'NÃO'}",
+        f"Arquivo ordenado corretamente: {'SIM' if ordenado else 'NÃO'}",
+        f"Números preservados: {'SIM' if numeros_preservados else 'NÃO'}",
+    ])
 
-    return mesma_quantidade and ordenado and numeros_preservados
+    return validacao, mesma_quantidade and ordenado and numeros_preservados
 
 
 if __name__ == "__main__":
@@ -145,6 +146,11 @@ if __name__ == "__main__":
     arquivos = dividir_arquivo("arquivo.txt") 
     juntar_arquivos(arquivos)
 
-    validar_resultado("arquivo.txt","arquivo_ordenado.txt")
-
-    print("\nLista ordenada: CONCLUIDA")
+    validacao, resultado = validar_resultado("arquivo.txt", "arquivo_ordenado.txt")
+    janela = tkinter.Tk()
+    janela.title("Validação da ordenação")
+    mensagem = f"{validacao}\n\nLista ordenada: {'CONCLUÍDA' if resultado else 'FALHOU'}"
+    label = tkinter.Label(janela, text=mensagem, font=("Arial", 16), justify="left", padx=20, pady=20)
+    label.pack()
+    janela.mainloop()
+    
